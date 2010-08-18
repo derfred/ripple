@@ -20,9 +20,10 @@ module Riak
     extend Util::Translation
     include Util::Escape
 
-    autoload :HTTPBackend,     "riak/client/http_backend"
-    autoload :NetHTTPBackend,  "riak/client/net_http_backend"
-    autoload :CurbBackend,     "riak/client/curb_backend"
+    autoload :HTTPBackend,    "riak/client/http_backend"
+    autoload :NetHTTPBackend, "riak/client/net_http_backend"
+    autoload :CurbBackend,    "riak/client/curb_backend"
+    autoload :RFuzzBackend,   "riak/client/rfuzz_backend"
 
     # When using integer client IDs, the exclusive upper-bound of valid values.
     MAX_CLIENT_ID = 4294967296

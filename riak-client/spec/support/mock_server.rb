@@ -57,5 +57,8 @@ class MockServer
     def warn(msg)  end
     def info(msg)  end
     def debug(msg) end
+    def debug?
+      false
+    end
   end
 end

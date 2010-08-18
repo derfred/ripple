@@ -140,8 +140,8 @@ describe Riak::Client do
     end
 
     it "should choose the supplied backend class if set" do
-      Riak::Client.backend_class = Riak::Client::FastHTTPBackend
-      @client.http.should be_instance_of(Riak::Client::FastHTTPBackend)
+      Riak::Client.backend_class = Riak::Client::RFuzzBackend
+      @client.http.should be_instance_of(Riak::Client::RFuzzBackend)
     end
 
     it "should choose the Curb backend if Curb is available" do

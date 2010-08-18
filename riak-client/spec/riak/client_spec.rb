@@ -135,14 +135,23 @@ describe Riak::Client do
       @client = Riak::Client.new
     end
 
+    after :each do
+      Riak::Client.backend_class = nil
+    end
+
+    it "should choose the supplied backend class if set" do
+      Riak::Client.backend_class = Riak::Client::FastHTTPBackend
+      @client.http.should be_instance_of(Riak::Client::FastHTTPBackend)
+    end
+
     it "should choose the Curb backend if Curb is available" do
-      @client.should_receive(:require).with('curb').and_return(true)
+      Riak::Client.should_receive(:require).with('curb').and_return(true)
       @client.http.should be_instance_of(Riak::Client::CurbBackend)
     end
 
     it "should choose the Net::HTTP backend if Curb is unavailable" do
-      @client.should_receive(:require).with('curb').and_raise(LoadError)
-      @client.should_receive(:warn).and_return(true)
+      Riak::Client.should_receive(:require).with('curb').and_raise(LoadError)
+      Riak::Client.should_receive(:warn).and_return(true)
       @client.http.should be_instance_of(Riak::Client::NetHTTPBackend)
     end
   end

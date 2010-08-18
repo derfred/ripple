@@ -17,11 +17,12 @@ module Riak
   # A client connection to Riak.
   class Client
     include Util::Translation
+    extend Util::Translation
     include Util::Escape
 
-    autoload :HTTPBackend,    "riak/client/http_backend"
-    autoload :NetHTTPBackend, "riak/client/net_http_backend"
-    autoload :CurbBackend,    "riak/client/curb_backend"
+    autoload :HTTPBackend,     "riak/client/http_backend"
+    autoload :NetHTTPBackend,  "riak/client/net_http_backend"
+    autoload :CurbBackend,     "riak/client/curb_backend"
 
     # When using integer client IDs, the exclusive upper-bound of valid values.
     MAX_CLIENT_ID = 4294967296
@@ -95,18 +96,31 @@ module Riak
       @port = value
     end
 
-    # Automatically detects and returns an appropriate HTTP backend.
+    # Sets the HTTP backend to use
+    # @param [Class] klass the class to use as HTTP backend
+    def self.backend_class=(klass)
+      @backend_class = klass
+    end
+
+    # Automatically detects and returns an appropriate HTTP backend class.
+    # If a explicit backend has been set, it will be used.
     # The HTTP backend is used internally by the Riak client, but can also
     # be used to access the server directly.
+    def self.backend_class
+      return @backend_class if @backend_class
+      begin
+        require 'curb'
+        CurbBackend
+      rescue LoadError, NameError
+        warn t("install_curb")
+        NetHTTPBackend
+      end
+    end
+
+    # Construct and returns the HTTP backend
     # @return [HTTPBackend] the HTTP backend for this client
     def http
-      @http ||= begin
-                  require 'curb'
-                  CurbBackend.new(self)
-                rescue LoadError, NameError
-                  warn t("install_curb")
-                  NetHTTPBackend.new(self)
-                end
+      @http ||= self.class.backend_class.new(self)
     end
 
     # Retrieves a bucket from Riak.
